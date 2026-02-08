@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -574,11 +575,19 @@
 
     // Check Gaps
     function checkGaps() {
+        if (!db.user || !db.user.startDate) return;
+
         const today = new Date();
+        const userStart = db.user.startDate;
         let gaps = 0;
+
         for (let i=1; i<=7; i++) {
-            const d = new Date(today); d.setDate(today.getDate() - i);
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
             const key = d.toISOString().split('T')[0];
+
+            if (key < userStart) continue;
+
             if (!db.logs[key]) gaps++;
         }
         document.getElementById('gapAlert').style.display = gaps > 0 ? 'flex' : 'none';
@@ -890,6 +899,7 @@
         
         document.getElementById('profBudget').innerText = budget + " kcal";
         
+        // Recalculate target date
         const diff = u.currentWeight - u.goalWeight;
         let rate = 0.5;
         if(u.planType === 'Mild') rate = 0.25;
