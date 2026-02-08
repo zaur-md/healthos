@@ -84,29 +84,44 @@
             min-width: 100px; flex-shrink: 0;
         }
 
+        /* --- FLEX CONTAINER FOR INPUTS --- */
         .input-group {
-            display: flex; align-items: center; justify-content: flex-end;
-            flex: 1; text-align: right; height: 100%;
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-end;
+            flex: 1; 
+            text-align: right; 
+            height: 100%;
         }
 
-        /* Generic List Input Style */
+        /* Base style for all inputs/spans in list */
         .list-input {
-            flex: 1; text-align: right; font-size: 17px; color: var(--blue);
-            border: none; background: transparent; font-family: inherit;
-            padding: 0; margin: 0;
+            text-align: right; 
+            font-size: 17px; 
+            color: var(--blue);
+            border: none; 
+            background: transparent; 
+            font-family: inherit;
+            padding: 0; 
+            margin: 0;
             min-width: 50px;
         }
-        .list-input::placeholder { color: #C7C7CC; }
-        
-        /* Force inputs to take full height for tapping */
+
+        /* Interactive Inputs: Full height for touch targets */
         input.list-input, select.list-select {
-            height: 100%; width: 100%;
+            height: 100%;
+            width: 100%;
+            flex: 1;
         }
 
-        /* Fix vertical alignment for text spans (Profile view) */
+        /* Static Text Spans: Auto height to allow centering by parent */
         span.list-input {
-            display: flex; align-items: center; justify-content: flex-end;
+            height: auto;
+            flex: 0 1 auto;
+            display: inline-block;
         }
+
+        .list-input::placeholder { color: #C7C7CC; }
         
         .list-unit { 
             color: #8E8E93; 
@@ -162,12 +177,22 @@
 
         .ring-wrapper { position: relative; width: 180px; height: 180px; margin: 10px auto 30px auto; }
         .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-        .ring-val { font-size: 36px; font-weight: 700; line-height: 1; }
+        .ring-val { font-size: 40px; font-weight: 700; line-height: 1; }
         .ring-lbl { font-size: 13px; color: var(--sub); text-transform: uppercase; font-weight: 600; margin-top: 5px; }
 
-        /* Stats Grid - 2 Columns for readability */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .mini-stat { background: #F2F2F7; border-radius: 12px; padding: 16px; text-align: center; }
+        /* Stats Grid - 2x2 for Dashboard */
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-top: 10px; 
+        }
+        .mini-stat { 
+            background: #F2F2F7; 
+            border-radius: 12px; 
+            padding: 16px; 
+            text-align: center; 
+        }
         .mini-val { display: block; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
         .mini-lbl { font-size: 11px; color: var(--sub); text-transform: uppercase; font-weight: 600; }
 
@@ -208,26 +233,77 @@
 
             <h2>Biometrics</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Sex</span><div class="input-group"><select id="setupSex" class="list-select"><option value="male">Male</option><option value="female">Female</option></select></div></div>
-                <div class="list-row"><span class="list-label">Age</span><div class="input-group"><input type="number" id="setupAge" class="list-input" placeholder="0" inputmode="decimal"><span class="list-unit">yrs</span></div></div>
-                <div class="list-row"><span class="list-label">Height</span><div class="input-group"><input type="number" id="setupHeight" class="list-input" placeholder="0" inputmode="decimal"><span class="list-unit">cm</span></div></div>
-                <div class="list-row"><span class="list-label">Weight</span><div class="input-group"><input type="number" id="setupWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1"><span class="list-unit">kg</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Sex</span>
+                    <div class="input-group">
+                        <select id="setupSex" class="list-select">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Age</span>
+                    <div class="input-group">
+                        <input type="number" id="setupAge" class="list-input" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">yrs</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Height</span>
+                    <div class="input-group">
+                        <input type="number" id="setupHeight" class="list-input" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">cm</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Weight</span>
+                    <div class="input-group">
+                        <input type="number" id="setupWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1">
+                        <span class="list-unit">kg</span>
+                    </div>
+                </div>
             </div>
 
-            <h2>Goals</h2>
+            <h2>Lifestyle & Goals</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Activity</span><div class="input-group"><select id="setupActivity" class="list-select"><option value="1.2">Sedentary (Office)</option><option value="1.375">Light (1-3 days)</option><option value="1.55">Moderate (3-5 days)</option><option value="1.725">Active (6-7 days)</option></select></div></div>
-                <div class="list-row"><span class="list-label">Target</span><div class="input-group"><input type="number" id="setupTarget" class="list-input" placeholder="0.0" inputmode="decimal"><span class="list-unit">kg</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Activity</span>
+                    <div class="input-group">
+                        <select id="setupActivity" class="list-select">
+                            <option value="1.2">Sedentary (Office)</option>
+                            <option value="1.375">Light (1-3 days)</option>
+                            <option value="1.55">Moderate (3-5 days)</option>
+                            <option value="1.725">Active (6-7 days)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Target</span>
+                    <div class="input-group">
+                        <input type="number" id="setupTarget" class="list-input" placeholder="0.0" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
+                </div>
             </div>
 
             <button class="btn-main" onclick="revealPlans()">Analyze & Create Plans</button>
-            <div id="plan-selector" style="display:none; margin-top: 40px; padding-bottom: 50px;"><h1>Select Pace</h1><p class="subtitle">Choose a sustainable path.</p><div class="plan-options" id="planOptionsContainer"></div></div>
+
+            <!-- HIDDEN PLAN SELECTION -->
+            <div id="plan-selector" style="display:none; margin-top: 40px; padding-bottom: 50px;">
+                <h1>Select Pace</h1>
+                <p class="subtitle">Choose a sustainable path.</p>
+                <div class="plan-options" id="planOptionsContainer"></div>
+            </div>
         </div>
 
         <!-- 2. DASHBOARD VIEW -->
         <div id="view-dash" class="view">
             <div class="date-control" style="position:relative;">
-                <div><div style="font-size:13px; color:var(--sub); font-weight:600; text-transform:uppercase;">Overview</div><div class="date-display" id="dashDateDisp">Today</div></div>
+                <div>
+                    <div style="font-size:13px; color:var(--sub); font-weight:600; text-transform:uppercase;">Overview</div>
+                    <div class="date-display" id="dashDateDisp">Today</div>
+                </div>
                 <div style="color:var(--blue); font-size:17px; font-weight:600;">📅</div>
                 <input type="date" id="dashDate" class="date-picker-hidden" onchange="dateChanged()">
             </div>
@@ -238,51 +314,139 @@
             </div>
 
             <div class="card" style="padding: 25px 20px;">
-                <div class="ring-wrapper"><canvas id="calRing"></canvas><div class="ring-center"><div class="ring-val" id="dispRem">0</div><div class="ring-lbl">Left</div></div></div>
+                <div class="ring-wrapper">
+                    <canvas id="calRing"></canvas>
+                    <div class="ring-center">
+                        <div class="ring-val" id="dispRem">0</div>
+                        <div class="ring-lbl">Left</div>
+                    </div>
+                </div>
+                
                 <div class="stats-grid">
-                    <div class="mini-stat"><span class="mini-val" id="dispTDEE" style="color:var(--text)">0</span><span class="mini-lbl">Daily Need (Burn)</span></div>
-                    <div class="mini-stat"><span class="mini-val" id="dispGoal" style="color:var(--blue)">0</span><span class="mini-lbl">Target Intake</span></div>
-                    <div class="mini-stat"><span class="mini-val" id="dispEaten" style="color:var(--orange)">0</span><span class="mini-lbl">Actual Intake</span></div>
-                    <div class="mini-stat"><span class="mini-val" id="dispRealDeficit" style="color:var(--green)">0</span><span class="mini-lbl">Real Deficit</span></div>
+                    <div class="mini-stat">
+                        <span class="mini-val" id="dispTDEE" style="color:var(--text)">0</span>
+                        <span class="mini-lbl">Daily Need (Burn)</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-val" id="dispGoal" style="color:var(--blue)">0</span>
+                        <span class="mini-lbl">Target Intake</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-val" id="dispEaten" style="color:var(--orange)">0</span>
+                        <span class="mini-lbl">Actual Intake</span>
+                    </div>
+                    <div class="mini-stat">
+                        <span class="mini-val" id="dispRealDeficit" style="color:var(--green)">0</span>
+                        <span class="mini-lbl">Real Deficit</span>
+                    </div>
                 </div>
             </div>
 
             <h2>Log Intake</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Weight</span><div class="input-group"><input type="number" id="logWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1" onchange="saveLog()"><span class="list-unit">kg</span></div></div>
-                <div class="list-row"><span class="list-label">Breakfast</span><div class="input-group"><input type="number" id="m1" class="list-input meal" placeholder="0" inputmode="decimal"><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Snack 1</span><div class="input-group"><input type="number" id="m2" class="list-input meal" placeholder="0" inputmode="decimal"><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Lunch</span><div class="input-group"><input type="number" id="m3" class="list-input meal" placeholder="0" inputmode="decimal"><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Snack 2</span><div class="input-group"><input type="number" id="m4" class="list-input meal" placeholder="0" inputmode="decimal"><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Dinner</span><div class="input-group"><input type="number" id="m5" class="list-input meal" placeholder="0" inputmode="decimal"><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Exercise</span><div class="input-group"><input type="number" id="logAct" class="list-input meal" placeholder="0" inputmode="decimal" style="color:var(--green);"><span class="list-unit">kcal</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Weight</span>
+                    <div class="input-group">
+                        <input type="number" id="logWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1" onchange="saveLog()">
+                        <span class="list-unit">kg</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Breakfast</span>
+                    <div class="input-group">
+                        <input type="number" id="m1" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Snack 1</span>
+                    <div class="input-group">
+                        <input type="number" id="m2" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Lunch</span>
+                    <div class="input-group">
+                        <input type="number" id="m3" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Snack 2</span>
+                    <div class="input-group">
+                        <input type="number" id="m4" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Dinner</span>
+                    <div class="input-group">
+                        <input type="number" id="m5" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Exercise</span>
+                    <div class="input-group">
+                        <input type="number" id="logAct" class="list-input meal" placeholder="0" inputmode="decimal" style="color:var(--green);">
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
             </div>
 
             <h2>Alcohol</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Type</span><div class="input-group"><select id="alcType" class="list-select" onchange="saveLog()"><option value="None">None</option><option value="Vodka">Vodka/Whiskey</option><option value="Beer">Beer</option><option value="Wine">Wine</option><option value="Cocktail">Cocktail</option></select></div></div>
-                <div class="list-row"><span class="list-label">Amount</span><div class="input-group"><input type="number" id="alcVol" class="list-input" placeholder="0" inputmode="decimal" onchange="saveLog()"><span class="list-unit">ml</span></div></div>
-                <div class="list-row"><span class="list-label">Calories</span><div class="input-group"><span class="list-input" style="color:var(--purple); font-weight:600;" id="alcKcal">0</span><span class="list-unit">kcal</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Type</span>
+                    <div class="input-group">
+                        <select id="alcType" class="list-select" onchange="saveLog()">
+                            <option value="None">None</option>
+                            <option value="Vodka">Vodka/Whiskey</option>
+                            <option value="Beer">Beer</option>
+                            <option value="Wine">Wine</option>
+                            <option value="Cocktail">Cocktail</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Amount</span>
+                    <div class="input-group">
+                        <input type="number" id="alcVol" class="list-input" placeholder="0" inputmode="decimal" onchange="saveLog()">
+                        <span class="list-unit">ml</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Calories</span>
+                    <div class="input-group">
+                        <span class="list-input" style="color:var(--purple); font-weight:600;" id="alcKcal">0</span>
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
             </div>
             
             <div id="statusMessage" style="text-align: center; color: var(--sub); font-size: 13px; font-weight:500;"></div>
+            
             <button class="btn-main btn-danger" id="btnDeleteLog" style="display:none; margin-top:20px;" onclick="deleteCurrentLog()">Delete This Log</button>
         </div>
 
         <!-- 3. STATS VIEW -->
         <div id="view-stats" class="view">
-            <h1>Trends</h1>
+            <h1>Progress</h1>
+            
             <div class="chart-controls">
                 <div class="chart-seg">
                     <button class="chart-btn active" id="btnModeWeight" onclick="setChartMode('weight')">Weight</button>
                     <button class="chart-btn" id="btnModeEnergy" onclick="setChartMode('energy')">Energy</button>
                 </div>
+                
                 <div class="range-bar">
                     <button class="range-chip active" id="rng1M" onclick="setChartRange('1M')">1M</button>
                     <button class="range-chip" id="rng3M" onclick="setChartRange('3M')">3M</button>
                     <button class="range-chip" id="rng6M" onclick="setChartRange('6M')">6M</button>
                     <button class="range-chip" id="rngCust" onclick="setChartRange('Custom')">Cust</button>
                 </div>
+
                 <div id="custom-range-picker" class="custom-range-inputs">
                     <input type="date" id="custStart" class="range-date" onchange="loadStats()">
                     <span style="color:var(--sub)">to</span>
@@ -318,40 +482,78 @@
                 </div>
             </div>
 
-            <h2>History</h2>
+            <h2>History <span style="font-size:12px; color:var(--sub); font-weight:400; text-transform:none;">(Tap to Edit)</span></h2>
             <div id="historyList"></div>
         </div>
 
         <!-- 4. PROFILE VIEW -->
         <div id="view-profile" class="view">
             <h1>Profile</h1>
-            <h2>Current Plan</h2>
+            
+            <h2>Plan</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Type</span><div class="input-group"><span class="list-input" style="color:var(--text); font-weight:600;" id="profPlanName">--</span></div></div>
-                <div class="list-row"><span class="list-label">Base Budget</span><div class="input-group"><span class="list-input" style="color:var(--blue); font-weight:700;" id="profBudget">0</span><span class="list-unit">kcal</span></div></div>
-                <div class="list-row"><span class="list-label">Target Date</span><div class="input-group"><span class="list-input" style="color:var(--sub);" id="profDate">--</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Type</span>
+                    <div class="input-group"><div class="input-group"><select id="profPlanSelect" class="list-select" onchange="updateProfile()"><option value="Mild">Mild</option><option value="Balanced">Balanced</option><option value="Intense">Intense</option></select></div></div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Budget</span>
+                    <div class="input-group">
+                        <span class="list-input" style="color:var(--blue); font-weight:700;" id="profBudget">0</span>
+                        <span class="list-unit">kcal</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Finish</span>
+                    <div class="input-group"><span class="list-input" style="color:var(--sub);" id="profDate">--</span></div>
+                </div>
             </div>
+
             <h2>Stats</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Weight</span><div class="input-group"><input type="number" id="profWeight" class="list-input" onchange="updateProfile()" inputmode="decimal"><span class="list-unit">kg</span></div></div>
-                <div class="list-row"><span class="list-label">Goal</span><div class="input-group"><input type="number" id="profGoal" class="list-input" onchange="updateProfile()" inputmode="decimal"><span class="list-unit">kg</span></div></div>
+                <div class="list-row">
+                    <span class="list-label">Weight</span>
+                    <div class="input-group">
+                        <input type="number" id="profWeight" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Goal</span>
+                    <div class="input-group">
+                        <input type="number" id="profGoal" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
+                </div>
             </div>
+
             <h2>Data</h2>
             <button class="btn-main" onclick="exportData()">Backup</button>
-            <div style="margin-top:10px;"><input type="file" id="importFile" style="display:none" onchange="importData(this)"><button class="btn-main btn-sec" onclick="document.getElementById('importFile').click()">Restore</button></div>
+            <div style="margin-top:10px;">
+                <input type="file" id="importFile" style="display:none" onchange="importData(this)">
+                <button class="btn-main btn-sec" onclick="document.getElementById('importFile').click()">Restore</button>
+            </div>
+
             <button class="btn-main btn-danger" onclick="resetApp()" style="margin-top:30px;">Reset App</button>
         </div>
+
     </div>
 
     <!-- === TAB BAR === -->
     <div class="tab-bar" id="tabBar" style="display: none;">
-        <button class="tab-btn active" onclick="nav('dash', this)"><span class="tab-icon">⦿</span><span class="tab-label">Today</span></button>
-        <button class="tab-btn" onclick="nav('stats', this)"><span class="tab-icon">📈</span><span class="tab-label">Trends</span></button>
-        <button class="tab-btn" onclick="nav('profile', this)"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+        <button class="tab-btn active" onclick="nav('dash', this)">
+            <span class="tab-icon">⦿</span><span class="tab-label">Today</span>
+        </button>
+        <button class="tab-btn" onclick="nav('stats', this)">
+            <span class="tab-icon">📈</span><span class="tab-label">Trends</span>
+        </button>
+        <button class="tab-btn" onclick="nav('profile', this)">
+            <span class="tab-icon">👤</span><span class="tab-label">Profile</span>
+        </button>
     </div>
 
 <script>
-    const KEY = 'healthos_v15_align';
+    const KEY = 'healthos_v20_final';
     let db = { user: null, logs: {} };
     let currentDateKey = new Date().toISOString().split('T')[0];
     let selectedPlanIndex = -1;
@@ -360,6 +562,12 @@
     let ringChart = null; 
     let chartMode = 'weight'; 
     let chartRange = '1M';
+
+    const PLANS = {
+        'Mild': { def: 250, loss: 0.25 },
+        'Balanced': { def: 500, loss: 0.5 },
+        'Intense': { def: 1000, loss: 1.0 }
+    };
 
     const alcFactor = {'Vodka': 2.3, 'Beer': 0.43, 'Wine': 0.85, 'Cocktail': 1.8, 'None': 0};
 
@@ -372,6 +580,7 @@
         return `${day}/${month}/${year}`;
     }
 
+    // --- INIT ---
     window.onload = () => {
         const saved = localStorage.getItem(KEY);
         if (saved) db = JSON.parse(saved);
@@ -401,7 +610,10 @@
     }
 
     // --- DASHBOARD ---
-    function dateChanged() { currentDateKey = document.getElementById('dashDate').value; loadDashboard(); }
+    function dateChanged() {
+        currentDateKey = document.getElementById('dashDate').value;
+        loadDashboard();
+    }
 
     function checkGaps() {
         if (!db.user || !db.user.startDate) return;
@@ -427,13 +639,15 @@
         const u = db.user;
         let bmr = (10*u.currentWeight)+(6.25*u.height)-(5*u.age)+(u.sex==='male'?5:-161);
         let tdee = Math.round(bmr*u.activity);
-        let budget = tdee - (u.targetDeficit||500);
+        let budget = Math.round(tdee - (u.targetDeficit||500));
         const min = u.sex==='male'?1500:1200; if(budget<min) budget=min;
 
         if(currentDateKey === new Date().toISOString().split('T')[0]) { checkGaps(); checkRecovery(); }
         else { document.getElementById('gapAlert').style.display='none'; document.getElementById('recoveryAlert').style.display='none'; }
 
+        // Use custom format
         document.getElementById('dashDateDisp').innerText = formatDate(currentDateKey);
+        
         document.getElementById('logWeight').value = log.weight||'';
         for(let i=0;i<5;i++) document.getElementById('m'+(i+1)).value = log.m[i]||'';
         document.getElementById('logAct').value = log.act||'';
@@ -451,7 +665,7 @@
         const food = (log.m||[]).reduce((a,b)=>a+b,0);
         const totalIn = Math.round(food + (log.alc?log.alc.kcal:0));
         const burned = Math.round(log.act||0);
-        const totalBurn = tdee + burned;
+        const totalBurn = tdee + burned; // TDEE + Exercise
         const totalBudget = Math.round(budget + burned);
         const rem = Math.round(totalBudget - totalIn);
         const realDeficit = Math.round(totalBurn - totalIn);
@@ -464,6 +678,7 @@
         const rEl = document.getElementById('dispRem');
         rEl.innerText = rem;
         rEl.style.color = rem<0?'var(--red)':'var(--text)';
+        
         document.getElementById('statusMessage').innerText = rem<0 ? `${Math.abs(rem)} kcal over.` : "On track.";
         document.getElementById('btnDeleteLog').style.display = db.logs[currentDateKey] ? 'block' : 'none';
 
@@ -485,7 +700,9 @@
         saveDB(); loadDashboard();
     }
 
-    function deleteCurrentLog() { if(confirm("Delete log?")) { delete db.logs[currentDateKey]; saveDB(); loadDashboard(); } }
+    function deleteCurrentLog() {
+        if(confirm("Delete log?")) { delete db.logs[currentDateKey]; saveDB(); loadDashboard(); }
+    }
 
     function renderRing(curr, max) {
         const ctx = document.getElementById('calRing').getContext('2d');
@@ -505,7 +722,6 @@
     function updateChartUI() {
         ['btnModeWeight','btnModeEnergy'].forEach(id=>document.getElementById(id).classList.remove('active'));
         document.getElementById(chartMode==='weight'?'btnModeWeight':'btnModeEnergy').classList.add('active');
-        
         ['rng1M','rng3M','rng6M','rngCust'].forEach(id=>document.getElementById(id).classList.remove('active'));
         let aid='rng1M'; if(chartRange==='3M')aid='rng3M'; if(chartRange==='6M')aid='rng6M'; if(chartRange==='Custom')aid='rngCust';
         document.getElementById(aid).classList.add('active');
@@ -517,7 +733,6 @@
         const actualLoss = u.startWeight - u.currentWeight;
         const toGo = (u.currentWeight - u.goalWeight);
         
-        // Calculate Predicted using Plan Timeline
         const start = new Date(u.startDate);
         const now = new Date();
         const diffTime = Math.abs(now - start);
@@ -630,7 +845,6 @@
                             const dailyNeed = tooltipBurns[i];
                             const intake = tooltipIntakes[i];
                             const def = tooltipDeficits[i];
-                            // UPDATED TOOLTIP TEXT
                             return [
                                 `Daily Need: ${dailyNeed}`,
                                 `Intake: ${intake}`,
@@ -674,16 +888,42 @@
     }
     function saveDB() { localStorage.setItem(KEY, JSON.stringify(db)); }
     function loadProfile() {
-        const u=db.user; document.getElementById('profPlanName').innerText=u.planType;
+        const u=db.user; 
+        
+        // Populate Plan Selector
+        const select = document.getElementById('profPlanSelect');
+        if (select) {
+             select.value = u.planType;
+        }
+
         let bmr=(10*u.currentWeight)+(6.25*u.height)-(5*u.age)+(u.sex==='male'?5:-161);
-        let bud=Math.round(bmr*u.activity)-(u.targetDeficit||500); const min=u.sex==='male'?1500:1200; if(bud<min) bud=min;
+        let bud=Math.round(bmr*u.activity)-(u.targetDeficit||500);
+        const min=u.sex==='male'?1500:1200; if(bud<min) bud=min;
         document.getElementById('profBudget').innerText=bud;
-        let rate=0.5; if(u.planType==='Mild')rate=0.25; if(u.planType==='Intense')rate=1.0;
-        const wks=(u.currentWeight-u.goalWeight)/rate; const d=new Date(); d.setDate(d.getDate()+(wks*7));
+        
+        let rate=0.5; 
+        if(u.planType==='Mild')rate=0.25; 
+        if(u.planType==='Intense')rate=1.0;
+        
+        const wks=(u.currentWeight-u.goalWeight)/rate; 
+        const d=new Date(); d.setDate(d.getDate()+(wks*7));
         document.getElementById('profDate').innerText=formatDate(d);
         document.getElementById('profWeight').value=u.currentWeight; document.getElementById('profGoal').value=u.goalWeight;
     }
-    function updateProfile() { db.user.currentWeight=Number(document.getElementById('profWeight').value); db.user.goalWeight=Number(document.getElementById('profGoal').value); saveDB(); loadProfile(); }
+    function updateProfile() { 
+        db.user.currentWeight=Number(document.getElementById('profWeight').value); 
+        db.user.goalWeight=Number(document.getElementById('profGoal').value); 
+        
+        // Update Plan Type
+        const newPlan = document.getElementById('profPlanSelect').value;
+        if(newPlan && PLANS[newPlan]) {
+            db.user.planType = newPlan;
+            db.user.targetDeficit = PLANS[newPlan].def;
+        }
+
+        saveDB(); 
+        loadProfile(); 
+    }
     function exportData() { const b=new Blob([JSON.stringify(db)],{type:"application/json"}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download="backup.json"; a.click(); }
     function importData(inp) { const f=inp.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); alert("Restored!"); location.reload(); }catch(err){alert("Error");} }; r.readAsText(f); }
     function resetApp() { if(confirm("Reset?")) { localStorage.removeItem(KEY); location.reload(); } }
