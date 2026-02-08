@@ -90,7 +90,13 @@
             padding: 10px 0; height: 100%;
         }
         .list-input::placeholder { color: #C7C7CC; }
-        .list-unit { color: var(--sub); font-size: 15px; margin-left: 4px; }
+        .list-unit { 
+            color: var(--sub); 
+            font-size: 15px; 
+            margin-left: 4px; 
+            flex-shrink: 0;
+            font-weight: 500;
+        }
         
         .list-select {
             appearance: none; border: none; background: transparent;
@@ -337,16 +343,38 @@
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Weight</span>
-                    <input type="number" id="logWeight" class="list-input" placeholder="kg" inputmode="decimal" step="0.1" onchange="saveLog()">
+                    <input type="number" id="logWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1" onchange="saveLog()">
+                    <span class="list-unit">kg</span>
                 </div>
-                <div class="list-row"><span class="list-label">Breakfast</span><input type="number" id="m1" class="list-input meal" placeholder="kcal" inputmode="decimal"></div>
-                <div class="list-row"><span class="list-label">Snack 1</span><input type="number" id="m2" class="list-input meal" placeholder="kcal" inputmode="decimal"></div>
-                <div class="list-row"><span class="list-label">Lunch</span><input type="number" id="m3" class="list-input meal" placeholder="kcal" inputmode="decimal"></div>
-                <div class="list-row"><span class="list-label">Snack 2</span><input type="number" id="m4" class="list-input meal" placeholder="kcal" inputmode="decimal"></div>
-                <div class="list-row"><span class="list-label">Dinner</span><input type="number" id="m5" class="list-input meal" placeholder="kcal" inputmode="decimal"></div>
+                <div class="list-row">
+                    <span class="list-label">Breakfast</span>
+                    <input type="number" id="m1" class="list-input meal" placeholder="0" inputmode="decimal">
+                    <span class="list-unit">kcal</span>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Snack 1</span>
+                    <input type="number" id="m2" class="list-input meal" placeholder="0" inputmode="decimal">
+                    <span class="list-unit">kcal</span>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Lunch</span>
+                    <input type="number" id="m3" class="list-input meal" placeholder="0" inputmode="decimal">
+                    <span class="list-unit">kcal</span>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Snack 2</span>
+                    <input type="number" id="m4" class="list-input meal" placeholder="0" inputmode="decimal">
+                    <span class="list-unit">kcal</span>
+                </div>
+                <div class="list-row">
+                    <span class="list-label">Dinner</span>
+                    <input type="number" id="m5" class="list-input meal" placeholder="0" inputmode="decimal">
+                    <span class="list-unit">kcal</span>
+                </div>
                 <div class="list-row" style="background:#F9F9F9;">
                     <span class="list-label">Exercise</span>
-                    <input type="number" id="logAct" class="list-input meal" placeholder="kcal" inputmode="decimal" style="color:var(--green);">
+                    <input type="number" id="logAct" class="list-input meal" placeholder="0" inputmode="decimal" style="color:var(--green);">
+                    <span class="list-unit">kcal</span>
                 </div>
             </div>
 
@@ -376,6 +404,7 @@
                 <div class="list-row" style="background:#F9FAFB;">
                     <span class="list-label">Est. Calories</span>
                     <span class="list-input" style="color:var(--purple); font-weight:700;" id="alcKcal">0</span>
+                    <span class="list-unit" style="color:var(--purple); font-weight:700;">kcal</span>
                 </div>
             </div>
             
@@ -456,10 +485,12 @@
                 <div class="list-row">
                     <span class="list-label">Weight</span>
                     <input type="number" id="profWeight" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                    <span class="list-unit">kg</span>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Goal</span>
                     <input type="number" id="profGoal" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                    <span class="list-unit">kg</span>
                 </div>
             </div>
 
