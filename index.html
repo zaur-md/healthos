@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,14 +7,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#F2F2F7">
     <title>HealthOS</title>
-    <!-- Chart.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --bg: #F0F0F5;
             --card: #FFFFFF;
-            --text: #1C1C1E;
-            --sub: #8E8E93;
+            --text: #000000;
+            --sub: #3C3C4399; /* Apple secondary label color */
             --blue: #007AFF;
             --green: #34C759;
             --red: #FF3B30;
@@ -25,8 +23,7 @@
             --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
-            --radius-l: 22px;
-            --radius-m: 14px;
+            --radius-l: 20px;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
@@ -56,171 +53,136 @@
         }
         .view.active { display: block; opacity: 1; }
 
-        /* --- MODERN TYPOGRAPHY --- */
-        h1 { font-size: 34px; font-weight: 800; margin: 10px 0 5px 0; letter-spacing: -0.8px; color: var(--text); }
+        /* --- TYPOGRAPHY --- */
+        h1 { font-size: 34px; font-weight: 700; margin: 10px 0 5px 0; letter-spacing: 0.3px; }
         .subtitle { font-size: 17px; color: var(--sub); margin-bottom: 25px; line-height: 1.4; }
-        h2 { font-size: 13px; color: var(--sub); text-transform: uppercase; font-weight: 600; margin: 25px 0 10px 16px; letter-spacing: 0.5px; }
+        h2 { font-size: 13px; color: var(--sub); text-transform: uppercase; font-weight: 600; margin: 25px 0 8px 16px; }
 
-        /* --- IOS 26 CARDS --- */
+        /* --- CARDS & LISTS --- */
         .card {
             background: var(--card);
             border-radius: var(--radius-l);
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             margin-bottom: 24px;
         }
 
-        /* Inset List Style */
         .list-row {
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px; min-height: 56px;
+            padding: 0 16px; min-height: 52px;
             background: var(--card);
             position: relative;
         }
+        /* Inner separator line */
         .list-row::after {
             content: ''; position: absolute; bottom: 0; right: 0; left: 16px;
-            height: 0.5px; background: #E5E5EA;
+            height: 0.5px; background: #C6C6C8;
         }
         .list-row:last-child::after { display: none; }
 
-        .list-label { font-size: 17px; font-weight: 500; color: var(--text); width: 120px; flex-shrink: 0; }
+        .list-label { 
+            font-size: 17px; font-weight: 400; color: var(--text); 
+            min-width: 100px; flex-shrink: 0;
+        }
+
+        /* Container for Input + Unit */
+        .input-group {
+            display: flex; align-items: center; justify-content: flex-end;
+            flex: 1; text-align: right;
+        }
+
         .list-input {
             flex: 1; text-align: right; font-size: 17px; color: var(--blue);
-            border: none; background: transparent; font-family: inherit; font-weight: 500;
-            padding: 10px 0; height: 100%;
+            border: none; background: transparent; font-family: inherit;
+            padding: 12px 0; height: 100%; width: 100%;
+            margin: 0;
         }
         .list-input::placeholder { color: #C7C7CC; }
+        
         .list-unit { 
-            color: var(--sub); 
-            font-size: 15px; 
-            margin-left: 4px; 
+            color: #8E8E93; /* Visible Grey */
+            font-size: 17px; 
+            margin-left: 6px; 
             flex-shrink: 0;
-            font-weight: 500;
+            pointer-events: none; /* Let clicks pass through to input */
         }
         
         .list-select {
             appearance: none; border: none; background: transparent;
             font-size: 17px; color: var(--blue); text-align-last: right;
-            direction: rtl; flex: 1; font-family: inherit; font-weight: 500;
+            direction: rtl; flex: 1; font-family: inherit;
+            padding-right: 0;
         }
 
         /* --- BUTTONS --- */
         .btn-main {
-            background: var(--blue); color: white; border: none; border-radius: 16px;
-            width: 100%; padding: 18px; font-size: 17px; font-weight: 700;
-            cursor: pointer; margin-top: 15px;
-            box-shadow: 0 4px 12px rgba(0,122,255,0.25);
-            transition: transform 0.1s;
+            background: var(--blue); color: white; border: none; border-radius: 14px;
+            width: 100%; padding: 16px; font-size: 17px; font-weight: 600;
+            cursor: pointer; margin-top: 10px;
         }
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--red); box-shadow: none; }
-        .btn-sec { background: #E5E5EA; color: var(--text); box-shadow: none; }
+        .btn-main:active { opacity: 0.7; }
+        .btn-danger { background: rgba(255, 59, 48, 0.1); color: var(--red); }
+        .btn-sec { background: #E5E5EA; color: var(--text); }
 
         /* --- ALERT BANNERS --- */
         .alert-banner {
-            padding: 15px; border-radius: 16px; margin-bottom: 20px; display: none;
-            font-size: 14px; font-weight: 600; line-height: 1.4;
+            padding: 15px; border-radius: 14px; margin-bottom: 20px; display: none;
+            font-size: 14px; font-weight: 500; line-height: 1.4;
             align-items: center; gap: 10px;
         }
         .alert-warn { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
         .alert-recovery { background: #F3E5F5; color: #7B1FA2; border: 1px solid #E1BEE7; }
 
-        /* --- PLAN SELECTION CARDS --- */
+        /* --- PLAN CARDS --- */
         .plan-options { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-        
         .plan-card {
             background: var(--card); border-radius: var(--radius-l); padding: 20px;
-            border: 2px solid transparent; cursor: pointer;
-            transition: all 0.2s ease; position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 2px solid transparent; cursor: pointer; position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: 0.2s;
         }
-        .plan-card.selected {
-            border-color: var(--blue); background: #F5F9FF;
-            box-shadow: 0 8px 25px rgba(0,122,255,0.15);
-        }
-        
-        .plan-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .plan-title { font-size: 19px; font-weight: 700; color: var(--text); }
-        .plan-cal { font-size: 24px; font-weight: 800; color: var(--blue); letter-spacing: -0.5px; }
-        .plan-desc { font-size: 14px; color: var(--sub); line-height: 1.4; margin-bottom: 12px; }
-        
-        .plan-meta {
-            display: flex; gap: 15px; font-size: 13px; font-weight: 600;
-            color: var(--text); background: rgba(0,0,0,0.03);
-            padding: 8px 12px; border-radius: 10px; width: fit-content;
-        }
-        .meta-tag { display: flex; align-items: center; gap: 4px; }
+        .plan-card.selected { border-color: var(--blue); background: #F2F7FF; }
+        .plan-title { font-size: 19px; font-weight: 600; }
+        .plan-cal { font-size: 22px; font-weight: 700; color: var(--blue); float: right;}
+        .plan-desc { font-size: 14px; color: var(--sub); margin: 8px 0; display:block;}
+        .plan-meta { font-size: 13px; font-weight: 500; color: var(--text); background: rgba(0,0,0,0.05); padding: 6px 10px; border-radius: 8px; display: inline-block; margin-top: 5px;}
 
-        /* --- DASHBOARD WIDGETS --- */
-        .date-control {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
-        }
-        .date-display { font-size: 22px; font-weight: 700; color: var(--text); }
-        .date-picker-hidden {
-            position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left:0;
-        }
+        /* --- WIDGETS --- */
+        .date-control { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .date-display { font-size: 28px; font-weight: 700; }
+        .date-picker-hidden { position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left:0; }
 
         .ring-wrapper { position: relative; width: 180px; height: 180px; margin: 10px auto 30px auto; }
-        .ring-center {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); text-align: center;
-        }
-        .ring-val { font-size: 38px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; color: var(--text); }
-        .ring-lbl { font-size: 13px; color: var(--sub); text-transform: uppercase; margin-top: 4px; font-weight: 600; letter-spacing: 0.5px; }
+        .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .ring-val { font-size: 40px; font-weight: 700; line-height: 1; }
+        .ring-lbl { font-size: 13px; color: var(--sub); text-transform: uppercase; font-weight: 600; margin-top: 5px; }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
         .mini-stat { background: #F2F2F7; border-radius: 12px; padding: 12px; text-align: center; }
-        .mini-val { display: block; font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+        .mini-val { display: block; font-size: 18px; font-weight: 600; }
         .mini-lbl { font-size: 11px; color: var(--sub); text-transform: uppercase; font-weight: 600; }
 
-        /* --- CHART CONTROLS & RANGE --- */
+        /* --- CHART & TAB --- */
         .chart-controls { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .chart-seg { background: #E5E5EA; padding: 3px; border-radius: 10px; display: flex; }
-        .chart-btn {
-            padding: 6px 24px; border: none; background: transparent; border-radius: 8px;
-            font-size: 13px; font-weight: 600; cursor: pointer; color: var(--sub);
-            transition: all 0.2s ease;
-        }
-        .chart-btn.active { background: #FFFFFF; color: var(--text); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-
-        .range-bar { display: flex; gap: 8px; justify-content: center; }
-        .range-chip {
-            padding: 5px 12px; border-radius: 16px; font-size: 12px; font-weight: 600;
-            background: rgba(0,0,0,0.05); color: var(--sub); border: none; cursor: pointer;
-        }
-        .range-chip.active { background: var(--blue); color: white; }
-
-        .custom-range-inputs {
-            display: none; width: 100%; flex-direction: row; gap: 10px; margin-top: 5px;
-            background: #fff; padding: 10px; border-radius: 12px; align-items: center;
-        }
-        .range-date { 
-            background: #F2F2F7; border:none; padding: 8px; border-radius: 8px; 
-            font-size: 13px; color: var(--blue); flex: 1; text-align: center;
-        }
-
-        /* --- TAB BAR --- */
-        .tab-bar {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 90px;
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border-top: 0.5px solid rgba(0,0,0,0.1);
-            display: flex; justify-content: space-around; padding-top: 12px; padding-bottom: var(--safe-bottom);
-            z-index: 1000;
-        }
-        .tab-btn {
-            background: none; border: none; display: flex; flex-direction: column;
-            align-items: center; gap: 5px; width: 65px; cursor: pointer;
-        }
-        .tab-icon { font-size: 26px; filter: grayscale(100%) opacity(0.5); transition: 0.3s; }
-        .tab-label { font-size: 10px; font-weight: 600; color: var(--sub); transition: 0.3s; }
+        .chart-seg { background: #E5E5EA; padding: 3px; border-radius: 9px; display: flex; }
+        .chart-btn { padding: 6px 20px; border: none; background: transparent; border-radius: 7px; font-size: 13px; font-weight: 500; color: var(--sub); }
+        .chart-btn.active { background: #FFFFFF; color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
         
-        .tab-btn.active .tab-icon { filter: none; transform: scale(1.1); }
+        .range-bar { display: flex; gap: 8px; justify-content: center; }
+        .range-chip { padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; background: #E5E5EA; color: var(--sub); border: none; }
+        .range-chip.active { background: var(--blue); color: white; }
+        
+        .custom-range-inputs { display: none; width: 100%; gap: 10px; margin-top: 5px; background: #fff; padding: 10px; border-radius: 12px; align-items: center; }
+        .range-date { background: #F2F2F7; border:none; padding: 8px; border-radius: 8px; font-size: 13px; color: var(--blue); flex: 1; text-align: center; }
+
+        .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-top: 0.5px solid #C6C6C8; display: flex; justify-content: space-around; padding-top: 10px; padding-bottom: var(--safe-bottom); z-index: 1000; }
+        .tab-btn { background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 4px; width: 60px; }
+        .tab-icon { font-size: 24px; filter: grayscale(100%) opacity(0.4); transition: 0.2s; }
+        .tab-label { font-size: 10px; font-weight: 500; color: var(--sub); }
+        .tab-btn.active .tab-icon { filter: none; transform: scale(1.1); color: var(--blue); opacity: 1; }
         .tab-btn.active .tab-label { color: var(--blue); }
 
-        /* Animation */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.4s ease forwards; }
-
     </style>
 </head>
 <body>
@@ -229,34 +191,42 @@
 
         <!-- 1. SETUP VIEW -->
         <div id="view-setup" class="view">
-            <div style="margin-top: 20px;">
+            <div style="margin-top: 40px;">
                 <h1>Setup Profile</h1>
-                <p class="subtitle">Enter your details to generate personalized nutrition plans.</p>
+                <p class="subtitle">Enter your details to generate your plan.</p>
             </div>
 
             <h2>Biometrics</h2>
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Sex</span>
-                    <select id="setupSex" class="list-select">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
+                    <div class="input-group">
+                        <select id="setupSex" class="list-select">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Age</span>
-                    <input type="number" id="setupAge" class="list-input" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">yrs</span>
+                    <div class="input-group">
+                        <input type="number" id="setupAge" class="list-input" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">yrs</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Height</span>
-                    <input type="number" id="setupHeight" class="list-input" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">cm</span>
+                    <div class="input-group">
+                        <input type="number" id="setupHeight" class="list-input" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">cm</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Weight</span>
-                    <input type="number" id="setupWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1">
-                    <span class="list-unit">kg</span>
+                    <div class="input-group">
+                        <input type="number" id="setupWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1">
+                        <span class="list-unit">kg</span>
+                    </div>
                 </div>
             </div>
 
@@ -264,17 +234,21 @@
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Activity</span>
-                    <select id="setupActivity" class="list-select">
-                        <option value="1.2">Sedentary (Office)</option>
-                        <option value="1.375">Light Exercise</option>
-                        <option value="1.55">Moderate Exercise</option>
-                        <option value="1.725">Active</option>
-                    </select>
+                    <div class="input-group">
+                        <select id="setupActivity" class="list-select">
+                            <option value="1.2">Sedentary (Office)</option>
+                            <option value="1.375">Light (1-3 days)</option>
+                            <option value="1.55">Moderate (3-5 days)</option>
+                            <option value="1.725">Active (6-7 days)</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="list-row">
-                    <span class="list-label">Goal Weight</span>
-                    <input type="number" id="setupTarget" class="list-input" placeholder="0.0" inputmode="decimal">
-                    <span class="list-unit">kg</span>
+                    <span class="list-label">Target</span>
+                    <div class="input-group">
+                        <input type="number" id="setupTarget" class="list-input" placeholder="0.0" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
                 </div>
             </div>
 
@@ -284,10 +258,7 @@
             <div id="plan-selector" style="display:none; margin-top: 40px; padding-bottom: 50px;">
                 <h1>Select Pace</h1>
                 <p class="subtitle">Choose a sustainable path.</p>
-                
-                <div class="plan-options" id="planOptionsContainer">
-                    <!-- Cards Injected via JS -->
-                </div>
+                <div class="plan-options" id="planOptionsContainer"></div>
             </div>
         </div>
 
@@ -298,20 +269,13 @@
                     <div style="font-size:13px; color:var(--sub); font-weight:600; text-transform:uppercase;">Overview</div>
                     <div class="date-display" id="dashDateDisp">Today</div>
                 </div>
-                <div style="color:var(--blue); font-size:17px; font-weight:600;">Change</div>
+                <div style="color:var(--blue); font-size:17px; font-weight:600;">📅</div>
                 <input type="date" id="dashDate" class="date-picker-hidden" onchange="dateChanged()">
             </div>
 
-            <!-- ALERTS -->
             <div id="alertArea">
-                <div id="gapAlert" class="alert-banner alert-warn">
-                    <span>⚠️</span>
-                    <span>Gap detected! You have missing logs in the last 7 days. Tap history to fix.</span>
-                </div>
-                <div id="recoveryAlert" class="alert-banner alert-recovery">
-                    <span>🍷</span>
-                    <span>Alcohol detected yesterday. <b>Recovery Mode</b> active: Activity target increased by 15%. Drink water!</span>
-                </div>
+                <div id="gapAlert" class="alert-banner alert-warn"><span>⚠️</span><span>Missing logs in last 7 days.</span></div>
+                <div id="recoveryAlert" class="alert-banner alert-recovery"><span>🍷</span><span>Recovery Mode: +15% Activity Goal.</span></div>
             </div>
 
             <div class="card" style="padding: 25px 20px;">
@@ -319,7 +283,7 @@
                     <canvas id="calRing"></canvas>
                     <div class="ring-center">
                         <div class="ring-val" id="dispRem">0</div>
-                        <div class="ring-lbl">Remaining</div>
+                        <div class="ring-lbl">Left</div>
                     </div>
                 </div>
                 
@@ -343,81 +307,94 @@
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Weight</span>
-                    <input type="number" id="logWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1" onchange="saveLog()">
-                    <span class="list-unit">kg</span>
+                    <div class="input-group">
+                        <input type="number" id="logWeight" class="list-input" placeholder="0.0" inputmode="decimal" step="0.1" onchange="saveLog()">
+                        <span class="list-unit">kg</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Breakfast</span>
-                    <input type="number" id="m1" class="list-input meal" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="m1" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Snack 1</span>
-                    <input type="number" id="m2" class="list-input meal" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="m2" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Lunch</span>
-                    <input type="number" id="m3" class="list-input meal" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="m3" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Snack 2</span>
-                    <input type="number" id="m4" class="list-input meal" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="m4" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Dinner</span>
-                    <input type="number" id="m5" class="list-input meal" placeholder="0" inputmode="decimal">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="m5" class="list-input meal" placeholder="0" inputmode="decimal">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
-                <div class="list-row" style="background:#F9F9F9;">
+                <div class="list-row">
                     <span class="list-label">Exercise</span>
-                    <input type="number" id="logAct" class="list-input meal" placeholder="0" inputmode="decimal" style="color:var(--green);">
-                    <span class="list-unit">kcal</span>
+                    <div class="input-group">
+                        <input type="number" id="logAct" class="list-input meal" placeholder="0" inputmode="decimal" style="color:var(--green);">
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
             </div>
 
-            <h2>Alcohol Tracker</h2>
+            <h2>Alcohol</h2>
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Type</span>
-                    <select id="alcType" class="list-select" onchange="saveLog()">
-                        <option value="None">None</option>
-                        <option value="Vodka">Vodka/Whiskey (40%)</option>
-                        <option value="Beer">Beer (Lager)</option>
-                        <option value="Wine">Wine (Red/White)</option>
-                        <option value="Champagne">Champagne</option>
-                        <option value="Cognac">Cognac</option>
-                        <option value="Tequila">Tequila</option>
-                        <option value="Gin">Gin</option>
-                        <option value="Rum">Rum</option>
-                        <option value="Cocktail">Cocktail (Avg)</option>
-                        <option value="Liqueur">Liqueur</option>
-                    </select>
+                    <div class="input-group">
+                        <select id="alcType" class="list-select" onchange="saveLog()">
+                            <option value="None">None</option>
+                            <option value="Vodka">Vodka/Whiskey</option>
+                            <option value="Beer">Beer</option>
+                            <option value="Wine">Wine</option>
+                            <option value="Cocktail">Cocktail</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Amount</span>
-                    <input type="number" id="alcVol" class="list-input" placeholder="0" inputmode="decimal" onchange="saveLog()">
-                    <span class="list-unit">ml</span>
+                    <div class="input-group">
+                        <input type="number" id="alcVol" class="list-input" placeholder="0" inputmode="decimal" onchange="saveLog()">
+                        <span class="list-unit">ml</span>
+                    </div>
                 </div>
-                <div class="list-row" style="background:#F9FAFB;">
-                    <span class="list-label">Est. Calories</span>
-                    <span class="list-input" style="color:var(--purple); font-weight:700;" id="alcKcal">0</span>
-                    <span class="list-unit" style="color:var(--purple); font-weight:700;">kcal</span>
+                <div class="list-row">
+                    <span class="list-label">Calories</span>
+                    <div class="input-group">
+                        <span class="list-input" style="color:var(--purple); font-weight:600;" id="alcKcal">0</span>
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
             </div>
             
             <div id="statusMessage" style="text-align: center; color: var(--sub); font-size: 13px; font-weight:500;"></div>
             
-            <button class="btn-main btn-danger" id="btnDeleteLog" style="display:none; margin-top:20px;" onclick="deleteCurrentLog()">Delete This Day's Log</button>
+            <button class="btn-main btn-danger" id="btnDeleteLog" style="display:none; margin-top:20px;" onclick="deleteCurrentLog()">Delete This Log</button>
         </div>
 
         <!-- 3. STATS VIEW -->
         <div id="view-stats" class="view">
             <h1>Progress</h1>
             
-            <!-- CHART CONTROLS -->
             <div class="chart-controls">
                 <div class="chart-seg">
                     <button class="chart-btn active" id="btnDaily" onclick="setChartScale('daily')">Daily</button>
@@ -428,7 +405,7 @@
                     <button class="range-chip active" id="rng1M" onclick="setChartRange('1M')">1M</button>
                     <button class="range-chip" id="rng3M" onclick="setChartRange('3M')">3M</button>
                     <button class="range-chip" id="rng6M" onclick="setChartRange('6M')">6M</button>
-                    <button class="range-chip" id="rngCust" onclick="setChartRange('Custom')">Custom</button>
+                    <button class="range-chip" id="rngCust" onclick="setChartRange('Custom')">Cust</button>
                 </div>
 
                 <div id="custom-range-picker" class="custom-range-inputs">
@@ -439,7 +416,7 @@
             </div>
 
             <div class="card" style="padding: 20px;">
-                <div class="chart-container">
+                <div class="chart-container" style="height:220px; position:relative; width:100%">
                     <canvas id="weightChart"></canvas>
                 </div>
                 <div style="text-align:center; font-size:12px; color:var(--sub); margin-top:5px;" id="chartRangeLabel"></div>
@@ -447,16 +424,16 @@
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div class="card" style="padding: 20px; text-align: center;">
-                    <span class="stat-num" style="color:var(--green); font-size: 28px; letter-spacing:-1px;" id="statLost">0</span>
-                    <span class="stat-desc">Kg Lost</span>
+                    <span class="stat-num" style="color:var(--green); font-size: 24px;" id="statLost">0</span>
+                    <span class="stat-desc" style="font-size:11px; color:var(--sub); text-transform:uppercase; font-weight:600;">Kg Lost</span>
                 </div>
                 <div class="card" style="padding: 20px; text-align: center;">
-                    <span class="stat-num" style="color:var(--blue); font-size: 28px; letter-spacing:-1px;" id="statRem">0</span>
-                    <span class="stat-desc">Kg To Go</span>
+                    <span class="stat-num" style="color:var(--blue); font-size: 24px;" id="statRem">0</span>
+                    <span class="stat-desc" style="font-size:11px; color:var(--sub); text-transform:uppercase; font-weight:600;">Kg To Go</span>
                 </div>
             </div>
 
-            <h2>History <span style="font-size:12px; color:var(--sub); font-weight:400; text-transform:none;">(Tap to Edit)</span></h2>
+            <h2>History</h2>
             <div id="historyList"></div>
         </div>
 
@@ -464,19 +441,22 @@
         <div id="view-profile" class="view">
             <h1>Profile</h1>
             
-            <h2>Current Plan</h2>
+            <h2>Plan</h2>
             <div class="card">
                 <div class="list-row">
-                    <span class="list-label">Plan Type</span>
-                    <span class="list-input" style="color: var(--text); font-weight:600;" id="profPlanName">--</span>
+                    <span class="list-label">Type</span>
+                    <div class="input-group"><span class="list-input" style="color:var(--text); font-weight:600;" id="profPlanName">--</span></div>
                 </div>
                 <div class="list-row">
-                    <span class="list-label">Base Budget</span>
-                    <span class="list-input" style="color: var(--blue); font-weight:700;" id="profBudget">0</span>
+                    <span class="list-label">Budget</span>
+                    <div class="input-group">
+                        <span class="list-input" style="color:var(--blue); font-weight:700;" id="profBudget">0</span>
+                        <span class="list-unit">kcal</span>
+                    </div>
                 </div>
                 <div class="list-row">
-                    <span class="list-label">Target Date</span>
-                    <span class="list-input" style="color: var(--sub);" id="profDate">--</span>
+                    <span class="list-label">Finish</span>
+                    <div class="input-group"><span class="list-input" style="color:var(--sub);" id="profDate">--</span></div>
                 </div>
             </div>
 
@@ -484,24 +464,28 @@
             <div class="card">
                 <div class="list-row">
                     <span class="list-label">Weight</span>
-                    <input type="number" id="profWeight" class="list-input" onchange="updateProfile()" inputmode="decimal">
-                    <span class="list-unit">kg</span>
+                    <div class="input-group">
+                        <input type="number" id="profWeight" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
                 </div>
                 <div class="list-row">
                     <span class="list-label">Goal</span>
-                    <input type="number" id="profGoal" class="list-input" onchange="updateProfile()" inputmode="decimal">
-                    <span class="list-unit">kg</span>
+                    <div class="input-group">
+                        <input type="number" id="profGoal" class="list-input" onchange="updateProfile()" inputmode="decimal">
+                        <span class="list-unit">kg</span>
+                    </div>
                 </div>
             </div>
 
-            <h2>Data Management</h2>
-            <button class="btn-main" onclick="exportData()">Backup Data (Download)</button>
+            <h2>Data</h2>
+            <button class="btn-main" onclick="exportData()">Backup</button>
             <div style="margin-top:10px;">
                 <input type="file" id="importFile" style="display:none" onchange="importData(this)">
-                <button class="btn-main btn-sec" onclick="document.getElementById('importFile').click()">Restore Data (Upload)</button>
+                <button class="btn-main btn-sec" onclick="document.getElementById('importFile').click()">Restore</button>
             </div>
 
-            <button class="btn-main btn-danger" onclick="resetApp()" style="margin-top:30px;">Reset All Data</button>
+            <button class="btn-main btn-danger" onclick="resetApp()" style="margin-top:30px;">Reset App</button>
         </div>
 
     </div>
@@ -509,22 +493,19 @@
     <!-- === TAB BAR === -->
     <div class="tab-bar" id="tabBar" style="display: none;">
         <button class="tab-btn active" onclick="nav('dash', this)">
-            <span class="tab-icon">⦿</span>
-            <span class="tab-label">Today</span>
+            <span class="tab-icon">⦿</span><span class="tab-label">Today</span>
         </button>
         <button class="tab-btn" onclick="nav('stats', this)">
-            <span class="tab-icon">📈</span>
-            <span class="tab-label">Trends</span>
+            <span class="tab-icon">📈</span><span class="tab-label">Trends</span>
         </button>
         <button class="tab-btn" onclick="nav('profile', this)">
-            <span class="tab-icon">👤</span>
-            <span class="tab-label">Profile</span>
+            <span class="tab-icon">👤</span><span class="tab-label">Profile</span>
         </button>
     </div>
 
 <script>
     // --- STATE ---
-    const KEY = 'healthos_v6_final';
+    const KEY = 'healthos_v7_final';
     let db = { user: null, logs: {} };
     let currentDateKey = new Date().toISOString().split('T')[0];
     let selectedPlanIndex = -1;
@@ -533,45 +514,31 @@
     let chartScale = 'daily';
     let chartRange = '1M';
 
-    // Alcohol Calorie Factors (Approx per ml)
-    const alcFactor = {
-        'Vodka': 2.3, 'Whiskey': 2.3, 'Rum': 2.3, 'Gin': 2.3, 'Tequila': 2.3, 'Cognac': 2.3,
-        'Beer': 0.43, 'Wine': 0.85, 'Champagne': 0.75,
-        'Cocktail': 1.8, 'Liqueur': 3.5, 'None': 0
-    };
+    const alcFactor = {'Vodka': 2.3, 'Beer': 0.43, 'Wine': 0.85, 'Cocktail': 1.8, 'None': 0};
 
     // --- INIT ---
     window.onload = () => {
         const saved = localStorage.getItem(KEY);
         if (saved) db = JSON.parse(saved);
-
         document.getElementById('dashDate').value = currentDateKey;
-        const d = new Date();
-        document.getElementById('custEnd').value = d.toISOString().split('T')[0];
-        d.setMonth(d.getMonth() - 1);
-        document.getElementById('custStart').value = d.toISOString().split('T')[0];
+        const d = new Date(); document.getElementById('custEnd').value = d.toISOString().split('T')[0];
+        d.setMonth(d.getMonth()-1); document.getElementById('custStart').value = d.toISOString().split('T')[0];
 
-        if (!db.user) {
-            showView('setup');
-        } else {
+        if (!db.user) showView('setup');
+        else {
             document.getElementById('tabBar').style.display = 'flex';
-            loadDashboard();
-            showView('dash');
+            loadDashboard(); showView('dash');
         }
-
-        // Listeners
         document.querySelectorAll('.meal').forEach(el => el.addEventListener('input', saveLog));
     };
 
-    // --- VIEW NAV ---
+    // --- NAV ---
     function nav(view, btn) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
-        try {
-            if(view === 'dash') loadDashboard();
-            if(view === 'stats') loadStats();
-            if(view === 'profile') loadProfile();
-        } catch (e) { console.error(e); }
+        if(view === 'dash') loadDashboard();
+        if(view === 'stats') loadStats();
+        if(view === 'profile') loadProfile();
         showView(view);
     }
     function showView(id) {
@@ -579,84 +546,51 @@
         document.getElementById('view-' + id).classList.add('active');
     }
 
-    // --- DASHBOARD LOGIC ---
-    let ringChart = null;
-
+    // --- CORE LOGIC ---
     function dateChanged() {
         currentDateKey = document.getElementById('dashDate').value;
         loadDashboard();
     }
 
-    // Check for Yesterday's Alcohol
-    function checkRecoveryMode() {
-        const today = new Date(currentDateKey);
-        const yest = new Date(today);
-        yest.setDate(today.getDate() - 1);
-        const yestKey = yest.toISOString().split('T')[0];
-        
-        const yLog = db.logs[yestKey];
-        if (yLog && yLog.alc && yLog.alc.kcal > 0) {
-            document.getElementById('recoveryAlert').style.display = 'flex';
-            return true; 
-        } else {
-            document.getElementById('recoveryAlert').style.display = 'none';
-            return false;
-        }
-    }
-
-    // Check Gaps
     function checkGaps() {
         if (!db.user || !db.user.startDate) return;
-
-        const today = new Date();
-        const userStart = db.user.startDate;
+        const today = new Date(); const start = db.user.startDate;
         let gaps = 0;
-
         for (let i=1; i<=7; i++) {
-            const d = new Date(today);
-            d.setDate(today.getDate() - i);
-            const key = d.toISOString().split('T')[0];
-
-            if (key < userStart) continue;
-
-            if (!db.logs[key]) gaps++;
+            const d = new Date(today); d.setDate(today.getDate()-i);
+            const k = d.toISOString().split('T')[0];
+            if (k >= start && !db.logs[k]) gaps++;
         }
         document.getElementById('gapAlert').style.display = gaps > 0 ? 'flex' : 'none';
     }
 
+    function checkRecovery() {
+        const t = new Date(currentDateKey); t.setDate(t.getDate()-1);
+        const k = t.toISOString().split('T')[0];
+        const log = db.logs[k];
+        document.getElementById('recoveryAlert').style.display = (log && log.alc && log.alc.kcal > 0) ? 'flex' : 'none';
+    }
+
     function loadDashboard() {
-        const log = db.logs[currentDateKey] || { weight: '', m:[0,0,0,0,0], act:0, alc:{type:'None', vol:0, kcal:0} };
+        const log = db.logs[currentDateKey] || { weight:'', m:[0,0,0,0,0], act:0, alc:{type:'None',vol:0,kcal:0} };
         const u = db.user;
         
-        // 1. Calc Base Plan (Adaptive)
-        let bmr = (10 * u.currentWeight) + (6.25 * u.height) - (5 * u.age) + (u.sex === 'male' ? 5 : -161);
-        let tdee = Math.round(bmr * u.activity);
-        
-        // 2. Safety Floor
-        const minCals = u.sex === 'male' ? 1500 : 1200;
-        let budget = tdee - (u.targetDeficit || 500);
-        if(budget < minCals) budget = minCals;
+        let bmr = (10*u.currentWeight)+(6.25*u.height)-(5*u.age)+(u.sex==='male'?5:-161);
+        let budget = Math.round(bmr*u.activity) - (u.targetDeficit||500);
+        const min = u.sex==='male'?1500:1200; if(budget<min) budget=min;
 
-        // 3. Alerts
-        if (currentDateKey === new Date().toISOString().split('T')[0]) {
-            checkGaps();
-            checkRecoveryMode();
-        } else {
-            document.getElementById('gapAlert').style.display = 'none';
-            document.getElementById('recoveryAlert').style.display = 'none';
-        }
+        if(currentDateKey === new Date().toISOString().split('T')[0]) { checkGaps(); checkRecovery(); }
+        else { document.getElementById('gapAlert').style.display='none'; document.getElementById('recoveryAlert').style.display='none'; }
 
-        // 4. Fill Inputs
-        document.getElementById('dashDateDisp').innerText = new Date(currentDateKey).toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+        document.getElementById('dashDateDisp').innerText = new Date(currentDateKey).toLocaleDateString('en-US',{weekday:'short',day:'numeric'});
         
-        document.getElementById('logWeight').value = log.weight || '';
-        for(let i=0; i<5; i++) document.getElementById('m'+(i+1)).value = log.m[i] || '';
-        document.getElementById('logAct').value = log.act || '';
+        document.getElementById('logWeight').value = log.weight||'';
+        for(let i=0;i<5;i++) document.getElementById('m'+(i+1)).value = log.m[i]||'';
+        document.getElementById('logAct').value = log.act||'';
         
-        // Alcohol Inputs
-        if (log.alc) {
+        if(log.alc) {
             document.getElementById('alcType').value = log.alc.type;
-            document.getElementById('alcVol').value = log.alc.vol || '';
+            document.getElementById('alcVol').value = log.alc.vol||'';
             document.getElementById('alcKcal').innerText = log.alc.kcal;
         } else {
             document.getElementById('alcType').value = 'None';
@@ -664,28 +598,21 @@
             document.getElementById('alcKcal').innerText = 0;
         }
 
-        // 5. Math
-        const foodCals = (log.m || []).reduce((a,b)=>a+b, 0);
-        const alcCals = log.alc ? log.alc.kcal : 0;
-        const totalIn = foodCals + alcCals;
-        
-        const burned = log.act || 0;
-        const totalBudget = budget + burned; 
-        const remaining = totalBudget - totalIn;
+        const food = (log.m||[]).reduce((a,b)=>a+b,0);
+        const totalIn = food + (log.alc?log.alc.kcal:0);
+        const burned = log.act||0;
+        const totalBudget = budget + burned;
+        const rem = totalBudget - totalIn;
 
-        // 6. Render
         document.getElementById('dispGoal').innerText = totalBudget;
         document.getElementById('dispEaten').innerText = totalIn;
         document.getElementById('dispBurn').innerText = burned;
         
-        const remEl = document.getElementById('dispRem');
-        remEl.innerText = remaining;
-        remEl.style.color = remaining < 0 ? 'var(--red)' : 'var(--text)';
-
-        const msg = document.getElementById('statusMessage');
-        if(remaining < 0) msg.innerText = Math.abs(remaining) + " kcal over budget.";
-        else msg.innerText = "On track.";
+        const rEl = document.getElementById('dispRem');
+        rEl.innerText = rem;
+        rEl.style.color = rem<0?'var(--red)':'var(--text)';
         
+        document.getElementById('statusMessage').innerText = rem<0 ? `${Math.abs(rem)} kcal over.` : "On track.";
         document.getElementById('btnDeleteLog').style.display = db.logs[currentDateKey] ? 'block' : 'none';
 
         renderRing(totalIn, totalBudget);
@@ -693,298 +620,180 @@
 
     function saveLog() {
         const wVal = document.getElementById('logWeight').value;
-        const weight = wVal ? Number(wVal) : ''; 
-        const m = [1,2,3,4,5].map(i => Number(document.getElementById('m'+i).value)||0);
+        const weight = wVal ? Number(wVal) : '';
+        const m = [1,2,3,4,5].map(i=>Number(document.getElementById('m'+i).value)||0);
         const act = Number(document.getElementById('logAct').value)||0;
         
-        // Alcohol Calc
-        const aType = document.getElementById('alcType').value;
-        const aVol = Number(document.getElementById('alcVol').value)||0;
-        const aKcal = Math.round(aVol * (alcFactor[aType] || 0));
-        document.getElementById('alcKcal').innerText = aKcal;
+        const at = document.getElementById('alcType').value;
+        const av = Number(document.getElementById('alcVol').value)||0;
+        const ak = Math.round(av * (alcFactor[at]||0));
+        document.getElementById('alcKcal').innerText = ak;
 
-        db.logs[currentDateKey] = { 
-            weight, m, act, 
-            alc: { type: aType, vol: aVol, kcal: aKcal },
-            total: m.reduce((a,b)=>a+b,0) + aKcal
-        };
+        db.logs[currentDateKey] = { weight, m, act, alc:{type:at, vol:av, kcal:ak}, total: m.reduce((a,b)=>a+b,0)+ak };
         
-        const today = new Date().toISOString().split('T')[0];
-        if(currentDateKey >= today && weight) {
-            db.user.currentWeight = weight;
-            saveDB();
-        } else {
-            saveDB();
-        }
-        loadDashboard();
+        if(currentDateKey >= new Date().toISOString().split('T')[0] && weight) db.user.currentWeight = weight;
+        saveDB(); loadDashboard();
     }
-    
+
     function deleteCurrentLog() {
-        if(confirm("Delete logs for " + currentDateKey + "?")) {
-            delete db.logs[currentDateKey];
-            saveDB();
-            loadDashboard();
-        }
+        if(confirm("Delete log?")) { delete db.logs[currentDateKey]; saveDB(); loadDashboard(); }
     }
 
-    // --- CHART & STATS ---
-    function saveDB() { localStorage.setItem(KEY, JSON.stringify(db)); }
-
-    function setChartScale(scale) {
-        chartScale = scale;
-        document.getElementById('btnDaily').className = scale === 'daily' ? 'chart-btn active' : 'chart-btn';
-        document.getElementById('btnMonthly').className = scale === 'monthly' ? 'chart-btn active' : 'chart-btn';
-        loadStats();
+    function renderRing(curr, max) {
+        const ctx = document.getElementById('calRing').getContext('2d');
+        if(ringChart) ringChart.destroy();
+        const color = curr > max ? '#FF3B30' : '#007AFF';
+        const rem = Math.max(0, max - curr);
+        ringChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { datasets: [{ data: [curr, rem], backgroundColor: [color, '#E5E5EA'], borderWidth: 0, borderRadius: 20 }] },
+            options: { cutout: '85%', responsive: true, animation: false, plugins: { legend: { display: false } } }
+        });
     }
 
-    function setChartRange(range) {
-        chartRange = range;
+    // --- CHART ---
+    function setChartScale(s) { chartScale=s; updateChartUI(); loadStats(); }
+    function setChartRange(r) { chartRange=r; updateChartUI(); loadStats(); }
+    function updateChartUI() {
+        ['btnDaily','btnMonthly'].forEach(id=>document.getElementById(id).classList.remove('active'));
+        document.getElementById(chartScale==='daily'?'btnDaily':'btnMonthly').classList.add('active');
         ['rng1M','rng3M','rng6M','rngCust'].forEach(id=>document.getElementById(id).classList.remove('active'));
-        let aid='rng1M'; if(range==='3M')aid='rng3M'; if(range==='6M')aid='rng6M'; if(range==='Custom')aid='rngCust';
+        let aid='rng1M'; if(chartRange==='3M')aid='rng3M'; if(chartRange==='6M')aid='rng6M'; if(chartRange==='Custom')aid='rngCust';
         document.getElementById(aid).classList.add('active');
-        document.getElementById('custom-range-picker').style.display = range==='Custom'?'flex':'none';
-        loadStats();
+        document.getElementById('custom-range-picker').style.display = chartRange==='Custom'?'flex':'none';
     }
 
     function loadStats() {
-        const lost = (db.user.startWeight - db.user.currentWeight).toFixed(1);
-        const rem = (db.user.currentWeight - db.user.goalWeight).toFixed(1);
-        document.getElementById('statLost').innerText = lost;
-        document.getElementById('statRem').innerText = rem;
+        const u = db.user;
+        document.getElementById('statLost').innerText = (u.startWeight - u.currentWeight).toFixed(1);
+        document.getElementById('statRem').innerText = (u.currentWeight - u.goalWeight).toFixed(1);
 
-        const list = document.getElementById('historyList');
-        list.innerHTML = '';
-        const dates = Object.keys(db.logs).sort().reverse().slice(0, 15);
-        
-        dates.forEach(d => {
+        const list = document.getElementById('historyList'); list.innerHTML='';
+        const keys = Object.keys(db.logs).sort().reverse().slice(0,10);
+        keys.forEach(d => {
             const l = db.logs[d];
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.style.padding = '15px';
-            div.style.marginBottom = '12px';
-            div.style.cursor = 'pointer';
-            div.onclick = () => {
-                document.getElementById('dashDate').value = d;
-                currentDateKey = d;
-                nav('dash');
-            };
-            div.style.display = 'flex'; div.style.justifyContent = 'space-between';
-            div.innerHTML = `
-                <span style="font-weight:600; color:var(--sub);">${d.slice(5)}</span>
-                <span style="font-weight:700;">${l.weight?l.weight+'kg':'--'}</span>
-                <span style="color:var(--blue); font-weight:600;">${l.total} kcal</span>
-            `;
+            const div = document.createElement('div'); div.className='card'; div.style.padding='15px'; div.style.marginBottom='10px'; div.style.cursor='pointer';
+            div.onclick=()=>{ document.getElementById('dashDate').value=d; currentDateKey=d; nav('dash'); };
+            div.innerHTML = `<div style="display:flex; justify-content:space-between"><span style="color:var(--sub); font-weight:600">${d.slice(5)}</span><span style="font-weight:700">${l.weight?l.weight+'kg':'--'}</span><span style="color:var(--blue)">${l.total} kcal</span></div>`;
             list.appendChild(div);
         });
         renderChart();
     }
 
     function renderChart() {
-         const ctx = document.getElementById('weightChart').getContext('2d');
-         if (weightChartInstance) { weightChartInstance.destroy(); }
-         
-         let startDate = new Date(); let endDate = new Date();
-         if (chartRange === '1M') startDate.setMonth(endDate.getMonth() - 1);
-         else if (chartRange === '3M') startDate.setMonth(endDate.getMonth() - 3);
-         else if (chartRange === '6M') startDate.setMonth(endDate.getMonth() - 6);
-         else if (chartRange === 'Custom') {
-             startDate = new Date(document.getElementById('custStart').value);
-             endDate = new Date(document.getElementById('custEnd').value);
-         }
-         
-         const fmt = {month:'short', day:'numeric'};
-         document.getElementById('chartRangeLabel').innerText = `${startDate.toLocaleDateString('en-US', fmt)} - ${endDate.toLocaleDateString('en-US', fmt)}`;
-         const startStr = startDate.toISOString().split('T')[0];
-         const endStr = endDate.toISOString().split('T')[0];
-         const allDates = Object.keys(db.logs).sort();
-         const rangeDates = allDates.filter(d => d >= startStr && d <= endStr && db.logs[d].weight);
-         
-         let chartLabels = []; let chartData = []; let targetData = [];
-         if (chartScale === 'daily') {
-             chartLabels = rangeDates.map(d => d.slice(5)); 
-             chartData = rangeDates.map(d => db.logs[d].weight);
-             targetData = new Array(chartData.length).fill(db.user.goalWeight);
-         } else {
-             const monthlyMap = {};
-             rangeDates.forEach(d => {
-                 const m = d.substring(0, 7); 
-                 if (!monthlyMap[m]) monthlyMap[m] = { sum: 0, count: 0 };
-                 monthlyMap[m].sum += db.logs[d].weight;
-                 monthlyMap[m].count++;
-             });
-             const months = Object.keys(monthlyMap).sort();
-             chartLabels = months.map(m => {
-                 const [y, mon] = m.split('-');
-                 return new Date(y, mon - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-             });
-             chartData = months.map(m => (monthlyMap[m].sum / monthlyMap[m].count));
-             targetData = new Array(chartData.length).fill(db.user.goalWeight);
-         }
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        if(weightChartInstance) weightChartInstance.destroy();
 
-         weightChartInstance = new Chart(ctx, {
+        let start = new Date(); let end = new Date();
+        if(chartRange==='1M') start.setMonth(end.getMonth()-1);
+        else if(chartRange==='3M') start.setMonth(end.getMonth()-3);
+        else if(chartRange==='6M') start.setMonth(end.getMonth()-6);
+        else if(chartRange==='Custom') { start=new Date(document.getElementById('custStart').value); end=new Date(document.getElementById('custEnd').value); }
+
+        document.getElementById('chartRangeLabel').innerText = `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+        const sStr = start.toISOString().split('T')[0]; const eStr = end.toISOString().split('T')[0];
+        const dates = Object.keys(db.logs).sort().filter(d => d>=sStr && d<=eStr && db.logs[d].weight);
+
+        let lbls=[], data=[], goal=[];
+        if(chartScale==='daily') {
+            lbls = dates.map(d=>d.slice(5)); data = dates.map(d=>db.logs[d].weight); goal=Array(data.length).fill(db.user.goalWeight);
+        } else {
+            const map={}; dates.forEach(d=>{ const m=d.slice(0,7); if(!map[m])map[m]={s:0,c:0}; map[m].s+=db.logs[d].weight; map[m].c++; });
+            const mons=Object.keys(map).sort();
+            lbls=mons; data=mons.map(m=>map[m].s/map[m].c); goal=Array(data.length).fill(db.user.goalWeight);
+        }
+
+        weightChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: chartLabels,
+                labels: lbls,
                 datasets: [
-                    {
-                        label: 'Weight', data: chartData, borderColor: '#007AFF', borderWidth: 3, pointRadius: chartScale==='daily' ? 1 : 4, tension: 0.2, backgroundColor: 'rgba(0,122,255,0.1)', fill: true
-                    },
-                    {
-                        label: 'Goal', data: targetData, borderColor: '#34C759', borderWidth: 2, pointRadius: 0, borderDash: [5, 5], fill: false
-                    }
+                    { label:'Wt', data:data, borderColor:'#007AFF', borderWidth:2, pointRadius:3, tension:0.3 },
+                    { label:'Goal', data:goal, borderColor:'#34C759', borderWidth:1, borderDash:[5,5], pointRadius:0 }
                 ]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: true }, y: { display: true } }, layout: { padding: 5 } }
-         });
-    }
-
-    function renderRing(current, max) {
-        const ctx = document.getElementById('calRing').getContext('2d');
-        if(ringChart) ringChart.destroy();
-        const color = current > max ? '#FF3B30' : '#007AFF';
-        const rem = Math.max(0, max - current);
-        ringChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: { datasets: [{ data: [current, rem], backgroundColor: [color, '#E5E5EA'], borderWidth: 0, borderRadius: 30 }] },
-            options: { cutout: '88%', responsive: true, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{position:'right'}} }
         });
     }
 
-    // --- SETUP & UTILS ---
+    // --- SETUP ---
     function revealPlans() {
-        const sex = document.getElementById('setupSex').value;
-        const age = Number(document.getElementById('setupAge').value);
-        const height = Number(document.getElementById('setupHeight').value);
-        const weight = Number(document.getElementById('setupWeight').value);
-        const act = Number(document.getElementById('setupActivity').value);
-        const target = Number(document.getElementById('setupTarget').value);
+        const w=Number(document.getElementById('setupWeight').value);
+        const t=Number(document.getElementById('setupTarget').value);
+        if(!w||!t) return alert("Fill fields");
+        
+        const s=document.getElementById('setupSex').value;
+        const bmr=(10*w)+(6.25*Number(document.getElementById('setupHeight').value))-(5*Number(document.getElementById('setupAge').value))+(s==='male'?5:-161);
+        const tdee=Math.round(bmr*Number(document.getElementById('setupActivity').value));
+        const diff=w-t;
 
-        if(!age || !height || !weight || !target) { alert("Please fill all fields."); return; }
-        
-        let bmr = (10 * weight) + (6.25 * height) - (5 * age) + (sex === 'male' ? 5 : -161);
-        const tdee = Math.round(bmr * act);
-        const diff = weight - target; 
-        
-        tempPlans = [
-            { name: "Mild", deficit: 250, desc: "Slow & steady.", color: "var(--teal)", weeklyLoss: 0.25 },
-            { name: "Balanced", deficit: 500, desc: "Recommended.", color: "var(--blue)", weeklyLoss: 0.5 },
-            { name: "Intense", deficit: 1000, desc: "Fast.", color: "var(--purple)", weeklyLoss: 1.0 }
+        tempPlans=[
+            {name:"Mild", def:250, desc:"Slow & steady", col:"var(--teal)", loss:0.25},
+            {name:"Balanced", def:500, desc:"Recommended", col:"var(--blue)", loss:0.5},
+            {name:"Intense", def:1000, desc:"Fast results", col:"var(--purple)", loss:1.0}
         ];
 
-        const container = document.getElementById('planOptionsContainer'); container.innerHTML = '';
-        tempPlans.forEach((p, idx) => {
-            let budget = tdee - p.deficit;
-            const minCals = sex === 'male' ? 1500 : 1200;
-            if(budget < minCals) budget = minCals;
+        const con=document.getElementById('planOptionsContainer'); con.innerHTML='';
+        tempPlans.forEach((p,i) => {
+            let bud = tdee - p.def;
+            const min = s==='male'?1500:1200; if(bud<min) bud=min;
+            const wks = diff/p.loss;
+            const d = new Date(); d.setDate(d.getDate()+(wks*7));
             
-            const weeksNeeded = diff / p.weeklyLoss;
-            const d = new Date(); d.setDate(d.getDate() + (weeksNeeded * 7));
-            const dateStr = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-
-            const div = document.createElement('div');
-            div.className = 'plan-card fade-in'; div.style.animationDelay = (idx * 0.1) + 's';
-            div.onclick = () => selectPlanUI(idx, div);
-            div.innerHTML = `<div class="plan-header"><span class="plan-title" style="color:${p.color}">${p.name}</span><span class="plan-cal">${budget} <span style="font-size:14px;color:var(--sub)">kcal</span></span></div><div class="plan-desc">${p.desc}</div><div class="plan-meta"><div class="meta-tag">📉 -${p.weeklyLoss}kg/wk</div><div class="meta-tag">🏁 ${dateStr}</div></div>`;
-            container.appendChild(div);
+            const div=document.createElement('div'); div.className='plan-card fade-in'; div.style.animationDelay=(i*0.1)+'s';
+            div.onclick=()=>selPlan(i,div);
+            div.innerHTML=`<div class="plan-header"><span class="plan-title" style="color:${p.col}">${p.name}</span><span class="plan-cal">${bud} <span style="font-size:14px;color:var(--sub)">kcal</span></span></div><div class="plan-desc">${p.desc}</div><div class="plan-meta"><div class="meta-tag">📉 -${p.loss}kg/wk</div><div class="meta-tag">🏁 ${d.toLocaleDateString()}</div></div>`;
+            con.appendChild(div);
         });
-        document.getElementById('plan-selector').style.display = 'block';
-        document.getElementById('plan-selector').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('plan-selector').style.display='block';
+        document.getElementById('plan-selector').scrollIntoView({behavior:'smooth'});
     }
 
-    function selectPlanUI(idx, el) {
-        selectedPlanIndex = idx;
-        document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    function selPlan(i, el) {
+        selectedPlanIndex=i;
+        document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
         el.classList.add('selected');
-        if(!document.getElementById('btnConfirmPlan')) {
-            const btn = document.createElement('button');
-            btn.id = 'btnConfirmPlan'; btn.className = 'btn-main fade-in'; btn.innerText = "Start Journey"; btn.onclick = finalizeSetup;
-            document.getElementById('plan-selector').appendChild(btn);
+        if(!document.getElementById('btnConfirm')) {
+            const b=document.createElement('button'); b.id='btnConfirm'; b.className='btn-main fade-in'; b.innerText='Start Journey'; b.onclick=finishSetup;
+            document.getElementById('plan-selector').appendChild(b);
         }
     }
 
-    function finalizeSetup() {
-        const weight = Number(document.getElementById('setupWeight').value);
-        db.user = {
-            sex: document.getElementById('setupSex').value,
-            age: Number(document.getElementById('setupAge').value),
-            height: Number(document.getElementById('setupHeight').value),
-            activity: Number(document.getElementById('setupActivity').value),
-            startWeight: weight, currentWeight: weight,
-            goalWeight: Number(document.getElementById('setupTarget').value),
-            planType: tempPlans[selectedPlanIndex].name,
-            targetDeficit: tempPlans[selectedPlanIndex].deficit,
-            startDate: new Date().toISOString().split('T')[0]
+    function finishSetup() {
+        const w=Number(document.getElementById('setupWeight').value);
+        db.user={
+            sex:document.getElementById('setupSex').value,
+            age:Number(document.getElementById('setupAge').value),
+            height:Number(document.getElementById('setupHeight').value),
+            activity:Number(document.getElementById('setupActivity').value),
+            startWeight:w, currentWeight:w,
+            goalWeight:Number(document.getElementById('setupTarget').value),
+            planType:tempPlans[selectedPlanIndex].name,
+            targetDeficit:tempPlans[selectedPlanIndex].def,
+            startDate:new Date().toISOString().split('T')[0]
         };
-        saveDB(); document.getElementById('tabBar').style.display = 'flex'; loadDashboard(); showView('dash');
+        saveDB(); document.getElementById('tabBar').style.display='flex'; loadDashboard(); showView('dash');
     }
 
+    function saveDB() { localStorage.setItem(KEY, JSON.stringify(db)); }
     function loadProfile() {
-        const u = db.user;
-        document.getElementById('profPlanName').innerText = u.planType || 'Custom';
+        const u=db.user;
+        document.getElementById('profPlanName').innerText=u.planType;
+        let bmr=(10*u.currentWeight)+(6.25*u.height)-(5*u.age)+(u.sex==='male'?5:-161);
+        let bud=Math.round(bmr*u.activity)-(u.targetDeficit||500);
+        const min=u.sex==='male'?1500:1200; if(bud<min) bud=min;
+        document.getElementById('profBudget').innerText=bud;
         
-        let bmr = (10 * u.currentWeight) + (6.25 * u.height) - (5 * u.age) + (u.sex === 'male' ? 5 : -161);
-        const tdee = Math.round(bmr * u.activity);
-        const minCals = u.sex === 'male' ? 1500 : 1200;
-        let budget = tdee - (u.targetDeficit || 500);
-        if(budget < minCals) budget = minCals;
-        
-        document.getElementById('profBudget').innerText = budget + " kcal";
-        
-        // Recalculate target date
-        const diff = u.currentWeight - u.goalWeight;
-        let rate = 0.5;
-        if(u.planType === 'Mild') rate = 0.25;
-        if(u.planType === 'Intense') rate = 1.0;
-        
-        const weeks = diff / rate;
-        const d = new Date(); d.setDate(d.getDate() + (weeks * 7));
-        document.getElementById('profDate').innerText = d.toLocaleDateString('en-US', {month:'short', year:'numeric'});
-
-        document.getElementById('profWeight').value = u.currentWeight;
-        document.getElementById('profGoal').value = u.goalWeight;
+        let rate=0.5; if(u.planType==='Mild')rate=0.25; if(u.planType==='Intense')rate=1.0;
+        const wks=(u.currentWeight-u.goalWeight)/rate;
+        const d=new Date(); d.setDate(d.getDate()+(wks*7));
+        document.getElementById('profDate').innerText=d.toLocaleDateString();
+        document.getElementById('profWeight').value=u.currentWeight; document.getElementById('profGoal').value=u.goalWeight;
     }
-
-    function updateProfile() {
-        db.user.currentWeight = Number(document.getElementById('profWeight').value);
-        db.user.goalWeight = Number(document.getElementById('profGoal').value);
-        saveDB();
-        loadProfile();
-    }
-
-    // EXPORT/IMPORT
-    function exportData() {
-        const str = JSON.stringify(db);
-        const blob = new Blob([str], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `healthos_backup_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-    }
-
-    function importData(input) {
-        const file = input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const data = JSON.parse(e.target.result);
-                if (data.user && data.logs) {
-                    db = data;
-                    saveDB();
-                    alert("Data restored successfully!");
-                    location.reload();
-                } else {
-                    alert("Invalid backup file.");
-                }
-            } catch (err) {
-                alert("Error reading file.");
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    function resetApp() { if(confirm("Delete all data?")) { localStorage.removeItem(KEY); location.reload(); } }
+    function updateProfile() { db.user.currentWeight=Number(document.getElementById('profWeight').value); db.user.goalWeight=Number(document.getElementById('profGoal').value); saveDB(); loadProfile(); }
+    function exportData() { const b=new Blob([JSON.stringify(db)],{type:"application/json"}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download="backup.json"; a.click(); }
+    function importData(inp) { const f=inp.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ db=JSON.parse(e.target.result); saveDB(); alert("Restored!"); location.reload(); }catch(err){alert("Error");} }; r.readAsText(f); }
+    function resetApp() { if(confirm("Reset?")) { localStorage.removeItem(KEY); location.reload(); } }
 </script>
 </body>
 </html>
