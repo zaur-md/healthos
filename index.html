@@ -400,7 +400,8 @@
             </div>
             <h2>Stats</h2>
             <div class="card">
-                <div class="list-row"><span class="list-label">Weight</span><div class="input-group"><input type="text" inputmode="decimal" id="profWeight" class="list-input" onblur="formatFloat(this); updateProfile()"><span class="list-unit">kg</span></div></div>
+                <div class="list-row"><span class="list-label">Start Weight</span><div class="input-group"><input type="text" inputmode="decimal" id="profStartWeight" class="list-input" onblur="formatFloat(this); updateProfile()"><span class="list-unit">kg</span></div></div>
+                <div class="list-row"><span class="list-label">Current</span><div class="input-group"><input type="text" inputmode="decimal" id="profWeight" class="list-input" onblur="formatFloat(this); updateProfile()"><span class="list-unit">kg</span></div></div>
                 <div class="list-row"><span class="list-label">Goal</span><div class="input-group"><input type="text" inputmode="decimal" id="profGoal" class="list-input" onblur="formatFloat(this); updateProfile()"><span class="list-unit">kg</span></div></div>
             </div>
             <h2>Data</h2>
@@ -410,7 +411,6 @@
         </div>
     </div>
 
-    <!-- === TAB BAR === -->
     <div class="tab-bar" id="tabBar" style="display: none;">
         <button class="tab-btn active" onclick="nav('dash', this)"><span class="tab-icon">⦿</span><span class="tab-label">Today</span></button>
         <button class="tab-btn" onclick="nav('stats', this)"><span class="tab-icon">📈</span><span class="tab-label">Trends</span></button>
@@ -418,7 +418,7 @@
     </div>
 
 <script>
-    const KEY = 'healthos_v23_final_qa';
+    const KEY = 'healthos_v24_profile_final';
     let db = { user: null, logs: {}, settings: { chartMode: 'weight', chartRange: '1M', customStart: null, customEnd: null } };
     let currentDateKey = new Date().toISOString().split('T')[0];
     let selectedPlanIndex = -1;
@@ -456,6 +456,7 @@
         return parseFloat(val.replace(',', '.')) || 0;
     }
 
+    // --- INIT ---
     window.onload = () => {
         const saved = localStorage.getItem(KEY);
         if (saved) {
@@ -933,9 +934,12 @@
         if(u.planType==='Intense')rate=1.0;
         const wks=(u.currentWeight-u.goalWeight)/rate; const d=new Date(); d.setDate(d.getDate()+(wks*7));
         document.getElementById('profDate').innerText=formatDate(d);
+        
+        document.getElementById('profStartWeight').value=u.startWeight;
         document.getElementById('profWeight').value=u.currentWeight; document.getElementById('profGoal').value=u.goalWeight;
     }
     function updateProfile() { 
+        db.user.startWeight=parseVal(document.getElementById('profStartWeight').value);
         db.user.currentWeight=parseVal(document.getElementById('profWeight').value); 
         db.user.goalWeight=parseVal(document.getElementById('profGoal').value); 
         const newPlan = document.getElementById('profPlanSelect').value;
